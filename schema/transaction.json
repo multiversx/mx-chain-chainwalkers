@@ -1,0 +1,77 @@
+{
+  "hash": {
+    "type": "string",
+    "description": "The hash of this transaction encoded as hex.",
+    "required": true
+  },
+  "miniBlockHash": {
+    "type": "string",
+    "description": "The miniblock hash in which the transaction was included encoded as hex.",
+    "required": true
+  },
+  "blockHash": {
+    "type": "string",
+    "description": "The block hash in which the transaction was included encoded as hex.",
+    "required": true
+  },
+  "nonce": {
+    "type": "uint64",
+    "description": "The nonce of this transaction.",
+    "required": true
+  },
+  "round": {
+    "type": "uint64",
+    "description": "The round when this transaction was processed.",
+    "required": true
+  },
+  "receiver": {
+    "type": "string",
+    "description": "The receiver address of this transaction encoded as hex.",
+    "required": true
+  },
+  "sender": {
+    "type": "string",
+    "description": "The sender address of this transaction encoded as hex.",
+    "required": true
+  },
+  "receiverShard": {
+    "type": "uint32",
+    "description": "Uint32 representation of the shard id  in which the receiver account is located.",
+    "required": true
+  },
+  "senderShard": {
+    "type": "uint32",
+    "description": "Uint32 representation of the shard id  in which the sender account is located.",
+    "required": true
+  },
+  "gasPrice": {
+    "type": "uint64",
+    "description": "Uint64 representation of gas price",
+    "required": true
+  },
+  "gasLimit": {
+    "type": "uint64",
+    "description": "Uint64 representation of gas limit",
+    "required": true
+  },
+  "data": {
+    "type": "[]byte",
+    "description": "",
+    "required": true
+  },
+  "signature": {
+    "type": "string",
+    "description": "",
+    "required": true
+  },
+  "timestamp": {
+    "type": "time.Duration",
+    "description": "",
+    "required": true
+  },
+  "status": {
+    "type": "string",
+    "description": "",
+    "required": true
+  }
+}

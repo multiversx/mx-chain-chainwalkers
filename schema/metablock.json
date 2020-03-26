@@ -63,5 +63,10 @@
     "type": "array<transaction.json",
     "description": "",
     "required": true
+  },
+  "shardBlocks": {
+    "type": "array<block.json>",
+    "description": "Contains an array of blocks. (We need this because we have a multi sharded architecture.",
+    "required": true
   }
 }
