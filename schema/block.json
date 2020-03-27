@@ -59,9 +59,9 @@
     "description": "The txCount represents the number of transaction that was included in this block.",
     "required": true
   },
-  "transaction": {
-    "type": "array<transaction.json",
-    "description": "",
+  "miniblocks": {
+    "type": "array<miniblock.json",
+    "description": "Contains a list of miniblocks that stores transactions. In our architecture transaction are grouped in miniblocks ",
     "required": true
   }
 }
