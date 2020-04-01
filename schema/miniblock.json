@@ -14,12 +14,6 @@
     "description": "Uint32 representation of the receiver shard id",
     "required": true
   },
-  "miniblockType": {
-    "type": "uint32",
-    "description": "A miniblock can be of several types",
-    "example": "TxBlock(0), StateBlock(30), PeerBlock(60), SmartContractResultBlock(90), InvalidBlock(120), ReceiptBlock(150), RewardsBlock(255)",
-    "required": true
-  },
   "transactions": {
     "type": "array<transaction.json>",
     "description": "",

@@ -9,6 +9,11 @@
     "description": "The round of this block.",
     "required": true
   },
+  "epoch": {
+    "type": "uint32",
+    "description": "The epoch of this block.",
+    "required": true
+  },
   "hash": {
     "type": "string",
     "description": "The hash of this block encoded as hex.",
