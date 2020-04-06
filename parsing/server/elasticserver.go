@@ -153,6 +153,7 @@ func (es *elasticServer) getTxByMbHash(hash string) ([]indexer.Transaction, erro
 	txs := make([]indexer.Transaction, 0)
 	for _, h1 := range r["hits"].(map[string]interface{})["hits"].([]interface{}) {
 		h2 := h1.(map[string]interface{})["_source"]
+		h3 := h1.(map[string]interface{})["_id"]
 
 		var tx indexer.Transaction
 		bbb, _ := json.Marshal(h2)
@@ -161,6 +162,7 @@ func (es *elasticServer) getTxByMbHash(hash string) ([]indexer.Transaction, erro
 			continue
 		}
 
+		tx.Hash = fmt.Sprintf("%s", h3)
 		txs = append(txs, tx)
 	}
 

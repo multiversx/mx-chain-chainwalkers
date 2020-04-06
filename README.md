@@ -10,7 +10,7 @@ Open `./parsing/confing.toml` and set database URL, Username and Password
 
 ## Building
 
-A docker image of the Elrond chainwalker can be built by running:
+A docker image of the Elrond chainwalkers can be built by running:
 
 ```shell
 bash builder_docker_image.sh 
