@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/ElrondNetwork/chaimwalkers-elrong-go/config"
+	"github.com/ElrondNetwork/chainwalkers-elrond-go/config"
 	"github.com/ElrondNetwork/elrond-go/core"
 	"github.com/ElrondNetwork/elrond-go/core/indexer"
 	"github.com/elastic/go-elasticsearch/v7"
@@ -59,10 +59,10 @@ func createQueryBlock(nonce uint64, shardId uint32) map[string]interface{} {
 	return query
 }
 
-func (es *elasticServer) getBlock(query map[string]interface{}) (indexer.Block, error) {
+func (es *elasticServer) getBlock(query map[string]interface{}) (indexer.Block, string, error) {
 	buff, err := encodeQuery(query)
 	if err != nil {
-		return indexer.Block{}, err
+		return indexer.Block{}, "", err
 	}
 
 	res, err := es.client.Search(
@@ -73,7 +73,7 @@ func (es *elasticServer) getBlock(query map[string]interface{}) (indexer.Block, 
 		es.client.Search.WithPretty(),
 	)
 	if err != nil {
-		return indexer.Block{}, err
+		return indexer.Block{}, "", err
 	}
 	defer func() {
 		_ = res.Body.Close()
@@ -82,9 +82,9 @@ func (es *elasticServer) getBlock(query map[string]interface{}) (indexer.Block, 
 	if res.IsError() {
 		var e map[string]interface{}
 		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
-			return indexer.Block{}, fmt.Errorf("error parsing the response body: %s", err.Error())
+			return indexer.Block{}, "", fmt.Errorf("error parsing the response body: %s", err.Error())
 		} else {
-			return indexer.Block{},
+			return indexer.Block{}, "",
 				fmt.Errorf("[%s] %s: %s",
 					res.Status(),
 					e["error"].(map[string]interface{})["type"],
@@ -95,24 +95,26 @@ func (es *elasticServer) getBlock(query map[string]interface{}) (indexer.Block, 
 
 	var r map[string]interface{}
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		return indexer.Block{}, fmt.Errorf("cannot decode response %s", err.Error())
+		return indexer.Block{}, "", fmt.Errorf("cannot decode response %s", err.Error())
 	}
 
 	h1 := r["hits"].(map[string]interface{})["hits"].([]interface{})
 	if len(h1) == 0 {
-		return indexer.Block{}, fmt.Errorf("cannot find blocks in database")
+		return indexer.Block{}, "", fmt.Errorf("cannot find blocks in database")
 	}
 
 	h2 := h1[0].(map[string]interface{})["_source"]
-
 	bbb, _ := json.Marshal(h2)
 	var block indexer.Block
 	err = json.Unmarshal(bbb, &block)
 	if err != nil {
-		return indexer.Block{}, fmt.Errorf("cannot unmarshal blocks")
+		return indexer.Block{}, "", fmt.Errorf("cannot unmarshal blocks")
 	}
 
-	return block, nil
+	h3 := h1[0].(map[string]interface{})["_id"]
+	blockHash := fmt.Sprint(h3)
+
+	return block, blockHash, nil
 }
 
 func (es *elasticServer) getTxByMbHash(hash string) ([]indexer.Transaction, error) {
@@ -178,12 +180,12 @@ func (es *elasticServer) GetTransactionsByMbHash(hash string) ([]indexer.Transac
 	return es.getTxByMbHash(hash)
 }
 
-func (es *elasticServer) GetMetaBlock(nonce uint64) (indexer.Block, error) {
+func (es *elasticServer) GetMetaBlock(nonce uint64) (indexer.Block, string, error) {
 	query := createQueryBlock(nonce, core.MetachainShardId)
 	return es.getBlock(query)
 }
 
-func (es *elasticServer) GetShardBlockByHash(hash string) (indexer.Block, error) {
+func (es *elasticServer) GetShardBlockByHash(hash string) (indexer.Block, string, error) {
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
 			"match": map[string]interface{}{

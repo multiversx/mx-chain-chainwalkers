@@ -4,12 +4,12 @@ import "github.com/ElrondNetwork/elrond-go/core/indexer"
 
 type DataGetter interface {
 	GetTransactionsByMbHash(hash string) ([]indexer.Transaction, error)
-	GetMetaBlock(nonce uint64) (indexer.Block, error)
-	GetShardBlockByHash(hash string) (indexer.Block, error)
+	GetMetaBlock(nonce uint64) (indexer.Block, string, error)
+	GetShardBlockByHash(hash string) (indexer.Block, string, error)
 }
 
 type ParserBlock interface {
-	MetaBlock(nonce uint64)
+	MetaBlocks(nonces []uint64)
 }
 
 type ParserHeight interface {

@@ -1,14 +1,13 @@
 package blockparser
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 
-	parsing "github.com/ElrondNetwork/chaimwalkers-elrong-go"
-	"github.com/ElrondNetwork/chaimwalkers-elrong-go/config"
-	"github.com/ElrondNetwork/chaimwalkers-elrong-go/server"
+	parsing "github.com/ElrondNetwork/chainwalkers-elrond-go"
+	"github.com/ElrondNetwork/chainwalkers-elrond-go/config"
+	"github.com/ElrondNetwork/chainwalkers-elrond-go/server"
 )
 
 type ParserBlock struct {
@@ -26,28 +25,32 @@ func NewParserBlock(cfg config.ElasticSearchConfig) (*ParserBlock, error) {
 	}, nil
 }
 
-func (pb *ParserBlock) MetaBlock(nonce uint64) {
-	mb, err := pb.prepareBlock(nonce)
-	if err != nil {
-		log.Fatalf("Fatal error: %s", err)
+func (pb *ParserBlock) MetaBlocks(nonces []uint64) {
+	metablocks := make([]MetaBlock, len(nonces))
+	for i := 0; i < len(nonces); i++ {
+		metaBlock, err := pb.prepareBlock(nonces[i])
+		if err != nil {
+			log.Fatalf("Fatal error: %s", err)
+		}
+
+		metablocks[i] = metaBlock
 	}
 
-	var buf bytes.Buffer
-
-	if err := json.NewEncoder(&buf).Encode(mb); err != nil {
+	buff, err := json.Marshal(&metablocks)
+	if err != nil {
 		log.Fatalf("Error encoding blocks: %s", err)
 	}
 
-	fmt.Println(string(buf.Bytes()))
+	fmt.Println(string(buff))
 }
 
 func (pb *ParserBlock) prepareBlock(nonce uint64) (MetaBlock, error) {
-	metaBlock, err := pb.dg.GetMetaBlock(nonce)
+	metaBlock, hash, err := pb.dg.GetMetaBlock(nonce)
 	if err != nil {
 		return MetaBlock{}, err
 	}
 
-	baseBlock := convertIndexerBlockToParserBlock(metaBlock)
+	baseBlock := convertIndexerBlockToParserBlock(metaBlock, hash)
 	metachainBlock := MetaBlock{}
 	metachainBlock.Block = baseBlock
 
@@ -55,14 +58,14 @@ func (pb *ParserBlock) prepareBlock(nonce uint64) (MetaBlock, error) {
 
 	shardBlocks := make([]ShardBlock, 0)
 	for _, shardBlockHash := range metaBlock.NotarizedBlocksHashes {
-		shardBlock, err := pb.dg.GetShardBlockByHash(shardBlockHash)
+		shardBlock, hash, err := pb.dg.GetShardBlockByHash(shardBlockHash)
 		if err != nil {
 			continue
 		}
 
 		mbs := pb.getMiniBlocksAndTxs(shardBlock.MiniBlocksHashes)
 
-		sb := convertIndexerBlockToParserBlock(shardBlock)
+		sb := convertIndexerBlockToParserBlock(shardBlock, hash)
 		sb.MiniBlocks = mbs
 
 		s := ShardBlock{}

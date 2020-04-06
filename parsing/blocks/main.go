@@ -1,15 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strconv"
 
-	parsing "github.com/ElrondNetwork/chaimwalkers-elrong-go"
-	"github.com/ElrondNetwork/chaimwalkers-elrong-go/blocks/blockparser"
-	"github.com/ElrondNetwork/chaimwalkers-elrong-go/config"
+	parsing "github.com/ElrondNetwork/chainwalkers-elrond-go"
+	"github.com/ElrondNetwork/chainwalkers-elrond-go/blocks/blockparser"
+	"github.com/ElrondNetwork/chainwalkers-elrond-go/config"
 	"github.com/ElrondNetwork/elrond-go/core"
 )
 
@@ -43,9 +42,8 @@ func parseBlocks(nonces []uint64) {
 		log.Fatal("cannot init blocks parser ", err)
 	}
 
-	for _, nonce := range nonces {
-		parser.MetaBlock(nonce)
-	}
+	parser.MetaBlocks(nonces)
+
 }
 
 func initBlocksParser() (parsing.ParserBlock, error) {
@@ -53,8 +51,6 @@ func initBlocksParser() (parsing.ParserBlock, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(dir)
 
 	configurationFileName := dir + "/../config.toml"
 

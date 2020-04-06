@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ElrondNetwork/chaimwalkers-elrong-go/config"
+	"github.com/ElrondNetwork/chainwalkers-elrond-go/config"
 	"github.com/ElrondNetwork/elrond-go/core"
 )
 

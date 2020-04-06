@@ -34,12 +34,12 @@ func convertIndexerTxsToParserTxs(txs []indexer.Transaction) []Transaction {
 	return parserTxs
 }
 
-func convertIndexerBlockToParserBlock(block indexer.Block) Block {
+func convertIndexerBlockToParserBlock(block indexer.Block, hash string) Block {
 	return Block{
 		Nonce:         block.Nonce,
 		Round:         block.Round,
 		Epoch:         block.Epoch,
-		Hash:          block.Hash,
+		Hash:          hash,
 		Proposer:      block.Proposer,
 		Validators:    block.Validators,
 		PubKeyBitmap:  block.PubKeyBitmap,

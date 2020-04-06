@@ -7,7 +7,7 @@
 #
 #
 
-FILE=parsing/blocks/blocks
+FILE=parsing/height/height
 if ! [ -f "$FILE" ]; then
     # shellcheck disable=SC2164
     cd parsing/height
