@@ -31,8 +31,6 @@ func initHeightParser() (*ParserHeight, error) {
 		return &ParserHeight{}, err
 	}
 
-	fmt.Println(dir)
-
 	configurationFileName := dir + "/../config.toml"
 
 	cfg, err := loadEconomicsConfig(configurationFileName)

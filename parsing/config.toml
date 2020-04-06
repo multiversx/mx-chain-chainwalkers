@@ -1,5 +1,5 @@
 # ElasticSearchConnector defines settings related to ElasticSearch such as login information or URL
 [ElasticSearchConnector]
-    URL        = "http://localhost:9200"
+    URL        = "https://elastic-aws.elrond.com"
     Username   = "basic_auth_username"
     Password   = "basic_auth_password"
