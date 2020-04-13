@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/ElrondNetwork/chainwalkers-elrond-go/config"
 	"github.com/ElrondNetwork/elrond-go/core"
@@ -80,17 +81,7 @@ func (es *elasticServer) getBlock(query map[string]interface{}) (indexer.Block, 
 	}()
 
 	if res.IsError() {
-		var e map[string]interface{}
-		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
-			return indexer.Block{}, "", fmt.Errorf("error parsing the response body: %s", err.Error())
-		} else {
-			return indexer.Block{}, "",
-				fmt.Errorf("[%s] %s: %s",
-					res.Status(),
-					e["error"].(map[string]interface{})["type"],
-					e["error"].(map[string]interface{})["reason"],
-				)
-		}
+		return indexer.Block{}, "", fmt.Errorf("error response: %s", res)
 	}
 
 	var r map[string]interface{}
@@ -100,7 +91,7 @@ func (es *elasticServer) getBlock(query map[string]interface{}) (indexer.Block, 
 
 	h1 := r["hits"].(map[string]interface{})["hits"].([]interface{})
 	if len(h1) == 0 {
-		return indexer.Block{}, "", fmt.Errorf("cannot find blocks in database")
+		return indexer.Block{}, "", fmt.Errorf("cannot find block in database")
 	}
 
 	h2 := h1[0].(map[string]interface{})["_source"]
@@ -119,6 +110,7 @@ func (es *elasticServer) getBlock(query map[string]interface{}) (indexer.Block, 
 
 func (es *elasticServer) getTxByMbHash(hash string) ([]indexer.Transaction, error) {
 	query := map[string]interface{}{
+		"size": 1000,
 		"query": map[string]interface{}{
 			"match": map[string]interface{}{
 				"miniBlockHash": hash,
@@ -132,6 +124,7 @@ func (es *elasticServer) getTxByMbHash(hash string) ([]indexer.Transaction, erro
 	}
 
 	res, err := es.client.Search(
+		es.client.Search.WithScroll(time.Minute),
 		es.client.Search.WithContext(context.Background()),
 		es.client.Search.WithIndex("transactions"),
 		es.client.Search.WithBody(&buff),
@@ -141,6 +134,11 @@ func (es *elasticServer) getTxByMbHash(hash string) ([]indexer.Transaction, erro
 	if err != nil {
 		return nil, err
 	}
+
+	if res.IsError() {
+		return nil, fmt.Errorf("error response: %s", res)
+	}
+
 	defer func() {
 		_ = res.Body.Close()
 	}()
@@ -164,6 +162,47 @@ func (es *elasticServer) getTxByMbHash(hash string) ([]indexer.Transaction, erro
 
 		tx.Hash = fmt.Sprintf("%s", h3)
 		txs = append(txs, tx)
+	}
+
+	// use scroll because cannot get more than 10k of transactions
+	scrollID := r["_scroll_id"].(string)
+	for {
+		res, err = es.client.Scroll(
+			es.client.Scroll.WithScrollID(scrollID),
+			es.client.Scroll.WithScroll(time.Minute),
+		)
+		if err != nil {
+			return nil, err
+		}
+		if res.IsError() {
+			return nil, fmt.Errorf("error response: %s", res)
+		}
+
+		var rScroll map[string]interface{}
+		if err := json.NewDecoder(res.Body).Decode(&rScroll); err != nil {
+			return nil, err
+		}
+
+		hits := rScroll["hits"].(map[string]interface{})
+		if len(hits["hits"].([]interface{})) < 1 {
+			break
+		}
+
+		for _, h1 := range hits["hits"].([]interface{}) {
+			h2 := h1.(map[string]interface{})["_source"]
+			h3 := h1.(map[string]interface{})["_id"]
+
+			var tx indexer.Transaction
+			bbb, _ := json.Marshal(h2)
+			err = json.Unmarshal(bbb, &tx)
+			if err != nil {
+				continue
+			}
+
+			tx.Hash = fmt.Sprintf("%s", h3)
+			txs = append(txs, tx)
+		}
+
 	}
 
 	return txs, nil
@@ -234,17 +273,7 @@ func (es *elasticServer) Height() (uint64, error) {
 	}()
 
 	if res.IsError() {
-		var e map[string]interface{}
-		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
-			return 0, fmt.Errorf("error parsing the response body: %s", err.Error())
-		} else {
-			return 0,
-				fmt.Errorf("[%s] %s: %s",
-					res.Status(),
-					e["error"].(map[string]interface{})["type"],
-					e["error"].(map[string]interface{})["reason"],
-				)
-		}
+		return 0, fmt.Errorf("error response: %s", res)
 	}
 
 	var r map[string]interface{}

@@ -51,8 +51,8 @@ func initBlocksParser() (parsing.ParserBlock, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	configurationFileName := dir + "/../config.toml"
+	//configurationFileName := "../config.toml"
 
 	cfg, err := loadEconomicsConfig(configurationFileName)
 	if err != nil {

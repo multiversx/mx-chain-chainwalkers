@@ -83,7 +83,10 @@ func (pb *ParserBlock) getMiniBlocksAndTxs(mbHahes []string) []MiniBlock {
 	miniblocks := make([]MiniBlock, 0)
 	for _, mbHash := range mbHahes {
 		txs, err := pb.dg.GetTransactionsByMbHash(mbHash)
-		if err != nil || len(txs) == 0 {
+		if err != nil {
+			log.Fatal("cannot get transactions", err.Error())
+		}
+		if len(txs) == 0 {
 			continue
 		}
 
