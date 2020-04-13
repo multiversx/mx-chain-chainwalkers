@@ -110,7 +110,6 @@ func (es *elasticServer) getBlock(query map[string]interface{}) (indexer.Block, 
 
 func (es *elasticServer) getTxByMbHash(hash string) ([]indexer.Transaction, error) {
 	query := map[string]interface{}{
-		"size": 1000,
 		"query": map[string]interface{}{
 			"match": map[string]interface{}{
 				"miniBlockHash": hash,
@@ -124,6 +123,7 @@ func (es *elasticServer) getTxByMbHash(hash string) ([]indexer.Transaction, erro
 	}
 
 	res, err := es.client.Search(
+		es.client.Search.WithSize(1000),
 		es.client.Search.WithScroll(time.Minute),
 		es.client.Search.WithContext(context.Background()),
 		es.client.Search.WithIndex("transactions"),
@@ -149,7 +149,57 @@ func (es *elasticServer) getTxByMbHash(hash string) ([]indexer.Transaction, erro
 	}
 
 	txs := make([]indexer.Transaction, 0)
-	for _, h1 := range r["hits"].(map[string]interface{})["hits"].([]interface{}) {
+	hits := r["hits"].(map[string]interface{})
+	txs = append(txs, formatTxs(hits)...)
+
+	// use scroll because cannot get more than 10k of transactions
+	scrollID := r["_scroll_id"].(string)
+	for {
+		rScroll, err := es.getScrollResponse(scrollID)
+		if err != nil {
+			return nil, err
+		}
+
+		hits := rScroll["hits"].(map[string]interface{})
+		if len(hits["hits"].([]interface{})) < 1 {
+			break
+		}
+
+		txs = append(txs, formatTxs(hits)...)
+	}
+
+	return txs, nil
+}
+
+func (es *elasticServer) getScrollResponse(scrollID string) (map[string]interface{}, error) {
+	resScroll, err := es.client.Scroll(
+		es.client.Scroll.WithScrollID(scrollID),
+		es.client.Scroll.WithScroll(time.Minute),
+	)
+	if err != nil {
+		return nil, err
+	}
+	if resScroll.IsError() {
+		return nil, fmt.Errorf("error response: %s", resScroll)
+	}
+
+	defer func() {
+		_ = resScroll.Body.Close()
+	}()
+
+	var rScroll map[string]interface{}
+	if err := json.NewDecoder(resScroll.Body).Decode(&rScroll); err != nil {
+		return nil, err
+	}
+
+	return rScroll, nil
+}
+
+func formatTxs(data map[string]interface{}) []indexer.Transaction {
+	var err error
+
+	txs := make([]indexer.Transaction, 0)
+	for _, h1 := range data["hits"].([]interface{}) {
 		h2 := h1.(map[string]interface{})["_source"]
 		h3 := h1.(map[string]interface{})["_id"]
 
@@ -163,49 +213,7 @@ func (es *elasticServer) getTxByMbHash(hash string) ([]indexer.Transaction, erro
 		tx.Hash = fmt.Sprintf("%s", h3)
 		txs = append(txs, tx)
 	}
-
-	// use scroll because cannot get more than 10k of transactions
-	scrollID := r["_scroll_id"].(string)
-	for {
-		res, err = es.client.Scroll(
-			es.client.Scroll.WithScrollID(scrollID),
-			es.client.Scroll.WithScroll(time.Minute),
-		)
-		if err != nil {
-			return nil, err
-		}
-		if res.IsError() {
-			return nil, fmt.Errorf("error response: %s", res)
-		}
-
-		var rScroll map[string]interface{}
-		if err := json.NewDecoder(res.Body).Decode(&rScroll); err != nil {
-			return nil, err
-		}
-
-		hits := rScroll["hits"].(map[string]interface{})
-		if len(hits["hits"].([]interface{})) < 1 {
-			break
-		}
-
-		for _, h1 := range hits["hits"].([]interface{}) {
-			h2 := h1.(map[string]interface{})["_source"]
-			h3 := h1.(map[string]interface{})["_id"]
-
-			var tx indexer.Transaction
-			bbb, _ := json.Marshal(h2)
-			err = json.Unmarshal(bbb, &tx)
-			if err != nil {
-				continue
-			}
-
-			tx.Hash = fmt.Sprintf("%s", h3)
-			txs = append(txs, tx)
-		}
-
-	}
-
-	return txs, nil
+	return txs
 }
 
 func encodeQuery(query map[string]interface{}) (bytes.Buffer, error) {
