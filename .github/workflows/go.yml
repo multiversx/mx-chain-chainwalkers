@@ -37,9 +37,9 @@ jobs:
         go build -v .
 
     - name: Build-height
-        run: |
-          cd parsing/height/
-          go build -v .
+       run: |
+        cd parsing/height/
+        go build -v .
 
     - name: Test
       run: go test -v .
