@@ -7,11 +7,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ElrondNetwork/chainwalkers-elrond-go/config"
+	"github.com/ElrondNetwork/chainwalkers-elrond-go/parsing/config"
 	"github.com/ElrondNetwork/elrond-go/core"
 	"github.com/ElrondNetwork/elrond-go/core/indexer"
 	"github.com/elastic/go-elasticsearch/v7"
 )
+
+type object = map[string]interface{}
 
 type elasticServer struct {
 	client *elasticsearch.Client
@@ -38,17 +40,17 @@ func NewElasticServer(cfg config.ElasticSearchConfig) (*elasticServer, error) {
 }
 
 func createQueryBlock(nonce uint64, shardId uint32) map[string]interface{} {
-	query := map[string]interface{}{
-		"query": map[string]interface{}{
-			"bool": map[string]interface{}{
+	query := object{
+		"query": object{
+			"bool": object{
 				"must": []interface{}{
-					map[string]interface{}{
-						"match": map[string]interface{}{
+					object{
+						"match": object{
 							"nonce": fmt.Sprintf("%d", nonce),
 						},
 					},
-					map[string]interface{}{
-						"match": map[string]interface{}{
+					object{
+						"match": object{
 							"shardId": fmt.Sprintf("%d", shardId),
 						},
 					},
@@ -60,7 +62,7 @@ func createQueryBlock(nonce uint64, shardId uint32) map[string]interface{} {
 	return query
 }
 
-func (es *elasticServer) getBlock(query map[string]interface{}) (indexer.Block, string, error) {
+func (es *elasticServer) getBlock(query object) (indexer.Block, string, error) {
 	buff, err := encodeQuery(query)
 	if err != nil {
 		return indexer.Block{}, "", err
@@ -84,17 +86,17 @@ func (es *elasticServer) getBlock(query map[string]interface{}) (indexer.Block, 
 		return indexer.Block{}, "", fmt.Errorf("error response: %s", res)
 	}
 
-	var r map[string]interface{}
+	var r object
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 		return indexer.Block{}, "", fmt.Errorf("cannot decode response %s", err.Error())
 	}
 
-	h1 := r["hits"].(map[string]interface{})["hits"].([]interface{})
+	h1 := r["hits"].(object)["hits"].([]interface{})
 	if len(h1) == 0 {
 		return indexer.Block{}, "", fmt.Errorf("cannot find block in database")
 	}
 
-	h2 := h1[0].(map[string]interface{})["_source"]
+	h2 := h1[0].(object)["_source"]
 	bbb, _ := json.Marshal(h2)
 	var block indexer.Block
 	err = json.Unmarshal(bbb, &block)
@@ -102,16 +104,16 @@ func (es *elasticServer) getBlock(query map[string]interface{}) (indexer.Block, 
 		return indexer.Block{}, "", fmt.Errorf("cannot unmarshal blocks")
 	}
 
-	h3 := h1[0].(map[string]interface{})["_id"]
+	h3 := h1[0].(object)["_id"]
 	blockHash := fmt.Sprint(h3)
 
 	return block, blockHash, nil
 }
 
 func (es *elasticServer) getTxByMbHash(hash string) ([]indexer.Transaction, error) {
-	query := map[string]interface{}{
-		"query": map[string]interface{}{
-			"match": map[string]interface{}{
+	query := object{
+		"query": object{
+			"match": object{
 				"miniBlockHash": hash,
 			},
 		},
@@ -143,13 +145,13 @@ func (es *elasticServer) getTxByMbHash(hash string) ([]indexer.Transaction, erro
 		_ = res.Body.Close()
 	}()
 
-	var r map[string]interface{}
+	var r object
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 		return nil, err
 	}
 
 	txs := make([]indexer.Transaction, 0)
-	hits := r["hits"].(map[string]interface{})
+	hits := r["hits"].(object)
 	txs = append(txs, formatTxs(hits)...)
 
 	// use scroll because cannot get more than 10k of transactions
@@ -160,7 +162,7 @@ func (es *elasticServer) getTxByMbHash(hash string) ([]indexer.Transaction, erro
 			return nil, err
 		}
 
-		hits := rScroll["hits"].(map[string]interface{})
+		hits := rScroll["hits"].(object)
 		if len(hits["hits"].([]interface{})) < 1 {
 			break
 		}
@@ -171,7 +173,7 @@ func (es *elasticServer) getTxByMbHash(hash string) ([]indexer.Transaction, erro
 	return txs, nil
 }
 
-func (es *elasticServer) getScrollResponse(scrollID string) (map[string]interface{}, error) {
+func (es *elasticServer) getScrollResponse(scrollID string) (object, error) {
 	resScroll, err := es.client.Scroll(
 		es.client.Scroll.WithScrollID(scrollID),
 		es.client.Scroll.WithScroll(time.Minute),
@@ -187,7 +189,7 @@ func (es *elasticServer) getScrollResponse(scrollID string) (map[string]interfac
 		_ = resScroll.Body.Close()
 	}()
 
-	var rScroll map[string]interface{}
+	var rScroll object
 	if err := json.NewDecoder(resScroll.Body).Decode(&rScroll); err != nil {
 		return nil, err
 	}
@@ -195,13 +197,13 @@ func (es *elasticServer) getScrollResponse(scrollID string) (map[string]interfac
 	return rScroll, nil
 }
 
-func formatTxs(data map[string]interface{}) []indexer.Transaction {
+func formatTxs(data object) []indexer.Transaction {
 	var err error
 
 	txs := make([]indexer.Transaction, 0)
 	for _, h1 := range data["hits"].([]interface{}) {
-		h2 := h1.(map[string]interface{})["_source"]
-		h3 := h1.(map[string]interface{})["_id"]
+		h2 := h1.(object)["_source"]
+		h3 := h1.(object)["_id"]
 
 		var tx indexer.Transaction
 		bbb, _ := json.Marshal(h2)
@@ -216,7 +218,7 @@ func formatTxs(data map[string]interface{}) []indexer.Transaction {
 	return txs
 }
 
-func encodeQuery(query map[string]interface{}) (bytes.Buffer, error) {
+func encodeQuery(query object) (bytes.Buffer, error) {
 	var buff bytes.Buffer
 	if err := json.NewEncoder(&buff).Encode(query); err != nil {
 		return bytes.Buffer{}, fmt.Errorf("error encoding query: %s", err.Error())
@@ -235,9 +237,9 @@ func (es *elasticServer) GetMetaBlock(nonce uint64) (indexer.Block, string, erro
 }
 
 func (es *elasticServer) GetShardBlockByHash(hash string) (indexer.Block, string, error) {
-	query := map[string]interface{}{
-		"query": map[string]interface{}{
-			"match": map[string]interface{}{
+	query := object{
+		"query": object{
+			"match": object{
 				"_id": hash,
 			},
 		},
@@ -247,15 +249,15 @@ func (es *elasticServer) GetShardBlockByHash(hash string) (indexer.Block, string
 }
 
 func (es *elasticServer) Height() (uint64, error) {
-	query := map[string]interface{}{
+	query := object{
 		"size": 1,
-		"query": map[string]interface{}{
-			"match": map[string]interface{}{
+		"query": object{
+			"match": object{
 				"shardId": fmt.Sprintf("%d", core.MetachainShardId),
 			},
 		},
-		"sort": map[string]interface{}{
-			"nonce": map[string]interface{}{
+		"sort": object{
+			"nonce": object{
 				"order": "desc",
 			},
 		},
@@ -284,17 +286,17 @@ func (es *elasticServer) Height() (uint64, error) {
 		return 0, fmt.Errorf("error response: %s", res)
 	}
 
-	var r map[string]interface{}
+	var r object
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 		return 0, fmt.Errorf("cannot decode response %s", err.Error())
 	}
 
-	h1 := r["hits"].(map[string]interface{})["hits"].([]interface{})
+	h1 := r["hits"].(object)["hits"].([]interface{})
 	if len(h1) == 0 {
 		return 0, fmt.Errorf("cannot find blocks in database")
 	}
 
-	h2 := h1[0].(map[string]interface{})["_source"]
+	h2 := h1[0].(object)["_source"]
 
 	bbb, _ := json.Marshal(h2)
 	var block indexer.Block

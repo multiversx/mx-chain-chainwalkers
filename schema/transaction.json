@@ -55,7 +55,7 @@
     "required": true
   },
   "data": {
-    "type": "string",
+    "type": "[]byte",
     "description": "",
     "required": true
   },
