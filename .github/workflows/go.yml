@@ -24,21 +24,21 @@ jobs:
 
     - name: Get dependencies
       run: |
-        cd parsing/
+        cd parsing
         go get -v -t -d ./...
         if [ -f Gopkg.toml ]; then
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
 
-    - name: Build-blocks
+    - name: Build blocks
       run: |
-        cd parsing/blocks/
+        cd parsing/blocks
         go build -v .
 
-    - name: Build-height
+    - name: Build height
        run: |
-        cd parsing/height/
+        cd parsing/height
         go build -v .
 
     - name: Test
