@@ -1,9 +1,9 @@
 package main
 
 import (
-	parsing "github.com/ElrondNetwork/chainwalkers-elrond-go"
-	"github.com/ElrondNetwork/chainwalkers-elrond-go/config"
-	"github.com/ElrondNetwork/chainwalkers-elrond-go/server"
+	"github.com/ElrondNetwork/chainwalkers-elrond-go/parsing"
+	"github.com/ElrondNetwork/chainwalkers-elrond-go/parsing/config"
+	"github.com/ElrondNetwork/chainwalkers-elrond-go/parsing/server"
 )
 
 type ParserHeight struct {

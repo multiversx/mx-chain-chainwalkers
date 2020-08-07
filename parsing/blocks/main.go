@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"strconv"
 
-	parsing "github.com/ElrondNetwork/chainwalkers-elrond-go"
-	"github.com/ElrondNetwork/chainwalkers-elrond-go/blocks/blockparser"
-	"github.com/ElrondNetwork/chainwalkers-elrond-go/config"
+	"github.com/ElrondNetwork/chainwalkers-elrond-go/parsing"
+	"github.com/ElrondNetwork/chainwalkers-elrond-go/parsing/blocks/blockparser"
+	"github.com/ElrondNetwork/chainwalkers-elrond-go/parsing/config"
 	"github.com/ElrondNetwork/elrond-go/core"
 )
 

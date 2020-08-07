@@ -1,8 +1,8 @@
-module github.com/ElrondNetwork/chainwalkers-elrond-go
+module github.com/ElrondNetwork/chainwalkers-elrond-go/parsing
 
 go 1.12
 
 require (
-	github.com/ElrondNetwork/elrond-go v1.0.98-0.20200410212307-ff90fb73bda1
+	github.com/ElrondNetwork/elrond-go v1.1.1-0.20200807114325-6ef834bed511
 	github.com/elastic/go-elasticsearch/v7 v7.1.0
 )
