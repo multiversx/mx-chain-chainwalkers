@@ -35,6 +35,11 @@ func convertIndexerTxsToParserTxs(txs []indexer.Transaction) []Transaction {
 }
 
 func convertIndexerBlockToParserBlock(block indexer.Block, hash string) Block {
+	// TODO: Check why we discard block.Hash.
+	// TODO: Check if we can drop "validators" field - is it required?
+	// TODO: Check if we should also add miniBlocksHashes field.
+	// TODO: Check why MiniBlocks field is nil.
+
 	return Block{
 		Nonce:         block.Nonce,
 		Round:         block.Round,
