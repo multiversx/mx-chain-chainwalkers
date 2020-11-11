@@ -29,11 +29,6 @@
     "description": "The validators represents the indexes of all validator that should have signed for this block.",
     "required": true
   },
-  "pubKeyBitmap": {
-    "type": "string",
-    "description": "",
-    "required": true
-  },
   "size":{
     "type": "int64",
     "description": "The size of this block in serialized block format, counted in bytes.",
