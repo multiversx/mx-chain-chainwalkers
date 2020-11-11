@@ -33,7 +33,7 @@ class ElrondApi(ElrondApiBase):
         return next(iter(response))
 
 
-class ElrondProxy(ElrondApiBase):
+class ElrondGateway(ElrondApiBase):
     def __init__(self, url: str):
         super().__init__(url)
 
