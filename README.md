@@ -6,7 +6,7 @@ Chainwalkers Framework Docs: [docs.flipsidecrypto.com](https://docs.flipsidecryp
 
 ## Getting Started
 
-Open `./parsing/confing.toml` and set database URL, Username and Password
+Open `./parsing/config.toml` and set database URL, Username and Password
 
 ## Building
 
