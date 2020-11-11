@@ -1,0 +1,42 @@
+{
+  "nonce": {
+    "type": "uint64",
+    "description": "The nonce of the metablock used to compose the hyperblock.",
+    "required": true
+  },
+  "round": {
+    "type": "uint64",
+    "description": "The round of this metablock (hyperblock).",
+    "required": true
+  },
+  "epoch": {
+    "type": "uint32",
+    "description": "The epoch of this metablock (hyperblock).",
+    "required": true
+  },
+  "hash": {
+    "type": "string",
+    "description": "The hex-encoded hash of this metablock (hyperblock).",
+    "required": true
+  },
+  "prevBlockHash": {
+    "type": "string",
+    "description": "The hex-encoded hash of the previous metablock (hyperblock).",
+    "required": true
+  },
+  "numTxs": {
+    "type": "uint64",
+    "description": "The number of included fully-executed transactions, as a result of notarizing their parent miniblocks at destination shard.",
+    "required": true
+  },
+  "shardBlocks": {
+    "type": "array<shardBlock.json>",
+    "description": "Contains an array of blocks notarized in the metablock (the basis of the hyperblock abstraction).",
+    "required": true
+  },
+  "transactions": {
+    "type": "array<transaction.json>",
+    "description": "The fully executed transactions, whose parent miniblocks were notarized in the metablock (the basis of the hyperblock abstraction).",
+    "required": true
+  }
+}

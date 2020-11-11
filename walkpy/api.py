@@ -1,10 +1,12 @@
 
+from typing import Any
+
 import requests
 
 from walkpy import errors
 
 
-class ElrondApi:
+class ElrondApiBase:
     def __init__(self, url: str):
         self.url = url
 
@@ -20,10 +22,30 @@ class ElrondApi:
         response = response.get("status", dict())
         return response
 
+
+class ElrondApi(ElrondApiBase):
+    def __init__(self, url: str):
+        super().__init__(url)
+
     def get_block(self, nonce: int, shard: int):
         url = f"{self.url}/blocks?nonce={nonce}&shard={shard}"
         response = _do_get(url)
         return next(iter(response))
+
+
+class ElrondProxy(ElrondApiBase):
+    def __init__(self, url: str):
+        super().__init__(url)
+
+    def get_hyperblock(self, key) -> Any:
+        url = f"{self.url}/hyperblock/by-hash/{key}"
+        if str(key).isnumeric():
+            url = f"{self.url}/hyperblock/by-nonce/{key}"
+
+        response = _do_get(url)
+        response = _open_proxy_response_envelope(url, response)
+        response = response.get("hyperblock", dict())
+        return response
 
 
 def _do_get(url):

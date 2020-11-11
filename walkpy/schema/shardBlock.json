@@ -1,0 +1,17 @@
+{
+  "nonce": {
+    "type": "uint64",
+    "description": "The nonce of the block.",
+    "required": true
+  },
+  "hash": {
+    "type": "string",
+    "description": "The hex-encoded hash of the block.",
+    "required": true
+  },
+  "shard": {
+    "type": "uint64",
+    "description": "The shard ID.",
+    "required": true
+  }
+}
