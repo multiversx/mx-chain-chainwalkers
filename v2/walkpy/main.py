@@ -3,7 +3,7 @@ import sys
 from argparse import ArgumentParser, FileType
 from typing import Any
 
-from walkpy import constants, utils
+from walkpy import constants, errors, utils
 from walkpy.api import ElrondGateway
 
 
@@ -30,6 +30,14 @@ def main():
         args.func(args)
 
 
+def get_height(args: Any):
+    gateway = ElrondGateway(constants.GATEWAY_URL)
+    outfile = args.outfile
+
+    height = gateway.get_chain_height(constants.METASHARD_ID)
+    utils.dump_json({"height": height}, outfile)
+
+
 def parse_blocks(args: Any):
     gateway = ElrondGateway(constants.GATEWAY_URL)
     outfile = args.outfile
@@ -38,18 +46,19 @@ def parse_blocks(args: Any):
     blocks = []
 
     for nonce in nonces:
-        hyperblock = gateway.get_hyperblock(nonce)
+        try:
+            hyperblock = gateway.get_hyperblock(nonce)
+            post_process_hyperblock(hyperblock)
+        except errors.ApiRequestError:
+            hyperblock = {"nonce": nonce}
         blocks.append(hyperblock)
 
     utils.dump_json(blocks, outfile)
 
 
-def get_height(args: Any):
-    gateway = ElrondGateway(constants.GATEWAY_URL)
-    outfile = args.outfile
-
-    height = gateway.get_chain_height(constants.METASHARD_ID)
-    utils.dump_json({"height": height}, outfile)
+def post_process_hyperblock(block: dict):
+    round = int(block.get("round", 0))
+    block["timestamp"] = constants.ERD_START_TIME + constants.ERD_ROUND_TIME * round
 
 
 if __name__ == "__main__":

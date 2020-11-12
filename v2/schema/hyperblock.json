@@ -14,6 +14,11 @@
     "description": "The epoch of this metablock (hyperblock).",
     "required": true
   },
+  "timestamp": {
+    "type": "time.Duration",
+    "description": "The timestamp of this block.",
+    "required": true
+  },
   "hash": {
     "type": "string",
     "description": "The hex-encoded hash of this metablock (hyperblock).",
