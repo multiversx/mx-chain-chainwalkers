@@ -10,7 +10,7 @@
     "required": true
   },
   "shard": {
-    "type": "uint64",
+    "type": "uint32",
     "description": "The shard ID.",
     "required": true
   }

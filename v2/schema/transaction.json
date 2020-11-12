@@ -40,12 +40,12 @@
     "required": true
   },
   "senderShard": {
-    "type": "uint64",
+    "type": "uint32",
     "description": "The shard of the sender account.",
     "required": true
   },
   "destinationShard": {
-    "type": "uint64",
+    "type": "uint32",
     "description": "The shard of the receiver account.",
     "required": true
   },
