@@ -19,7 +19,7 @@ This will create the image `chainwalkers_elrond:latest`.
 
 ## Up and Running
 
-This parser has two entry points, each of which writes a json response to stdout.
+This tool has two entry points:
 
 1. `get_height.sh`: returns the current height of the Blockchain (actually, of the Elrond Metachain).
 2. `parse_blocks.sh [int, int, ...]`: returns an array of blocks (actually, the Elrond Hyperblocks, an abstract structure derived from the Metablock), along with their transactions (if any).
