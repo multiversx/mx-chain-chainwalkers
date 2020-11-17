@@ -1,2 +1,2 @@
 requests~=2.24.0
-erdpy==0.9.6b1
+erdpy==0.9.6b2
