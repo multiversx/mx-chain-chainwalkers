@@ -59,6 +59,11 @@
     "description": "The maximum amount of gas to use for processing the transaction, as specified by the sender.",
     "required": false
   },
+  "fee": {
+    "type": "string",
+    "description": "The transaction fee. Until Hyperblocks V2 API becomes available, this fee is computed on App's side (best effort).",
+    "required": false
+  },
   "value": {
     "type": "string",
     "description": "The amount of eGLD to be transferred.",
