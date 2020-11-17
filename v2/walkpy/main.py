@@ -4,11 +4,11 @@ import sys
 from argparse import ArgumentParser, FileType
 from typing import Any
 
-from erdpy import utils
+from erdpy import errors, utils
 from erdpy.accounts import Address
+from erdpy.proxy import ElrondProxy
 
-from walkpy import constants, errors
-from walkpy.api import ElrondGateway
+from walkpy import constants
 
 
 def main():
@@ -35,15 +35,15 @@ def main():
 
 
 def get_height(args: Any):
-    gateway = ElrondGateway(constants.GATEWAY_URL)
+    gateway = ElrondProxy(constants.GATEWAY_URL)
     outfile = args.outfile
 
-    height = gateway.get_chain_height(constants.METASHARD_ID)
+    height = gateway.get_last_block_nonce(constants.METASHARD_ID)
     utils.dump_out_json({"height": height}, outfile)
 
 
 def parse_blocks(args: Any):
-    gateway = ElrondGateway(constants.GATEWAY_URL)
+    gateway = ElrondProxy(constants.GATEWAY_URL)
     outfile = args.outfile
     nonces = args.blocks
 
@@ -53,7 +53,7 @@ def parse_blocks(args: Any):
         try:
             hyperblock = gateway.get_hyperblock(nonce)
             post_process_hyperblock(hyperblock)
-        except errors.ApiRequestError:
+        except errors.ProxyRequestError:
             hyperblock = {"nonce": nonce}
         blocks.append(hyperblock)
 
