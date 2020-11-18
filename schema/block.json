@@ -65,8 +65,8 @@
     "required": true
   },
   "miniblocks": {
-    "type": "array<miniblock.json",
-    "description": "Contains a list of miniblocks that stores transactions. In our architecture transaction are grouped in miniblocks ",
+    "type": "array<miniblock.json>",
+    "description": "Contains a list of miniblocks that store transactions. In our architecture transaction are grouped in miniblocks.",
     "required": true
   }
 }

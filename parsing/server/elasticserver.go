@@ -86,6 +86,8 @@ func (es *elasticServer) getBlock(query object) (indexer.Block, string, error) {
 		return indexer.Block{}, "", fmt.Errorf("error response: %s", res)
 	}
 
+	// TODO: check why the field "miniBlocksHashes" is not populated.
+
 	var r object
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 		return indexer.Block{}, "", fmt.Errorf("cannot decode response %s", err.Error())

@@ -1,0 +1,87 @@
+{
+  "type": {
+    "type": "string",
+    "description": "Tye type of transaction (normal, unsigned, reward, invalid).",
+    "required": true
+  },
+  "hash": {
+    "type": "string",
+    "description": "The hex-encoded hash of the transaction.",
+    "required": true
+  },
+  "miniblockHash": {
+    "type": "string",
+    "description": "The hex-encoded hash of the miniblock that included this transaction.",
+    "required": true
+  },
+  "miniblockType": {
+    "type": "string",
+    "description": "The type of the miniblock that included this transaction (TxBlock, InvalidBlock, RewardsBlock, SmartContractResultBlock).",
+    "required": true
+  },
+  "nonce": {
+    "type": "uint64",
+    "description": "The nonce of this transaction.",
+    "required": false
+  },
+  "round": {
+    "type": "uint64",
+    "description": "The round when this transaction was processed.",
+    "required": true
+  },
+  "receiver": {
+    "type": "string",
+    "description": "The receiver of the transaction (bech32 format).",
+    "required": true
+  },
+  "sender": {
+    "type": "string",
+    "description": "The sender of the transaction (bech32 format).",
+    "required": true
+  },
+  "senderShard": {
+    "type": "uint32",
+    "description": "The shard of the sender account.",
+    "required": true
+  },
+  "destinationShard": {
+    "type": "uint32",
+    "description": "The shard of the receiver account.",
+    "required": true
+  },
+  "gasPrice": {
+    "type": "uint64",
+    "description": "The applicable gas price for processing the transaction, as specified by the sender.",
+    "required": false
+  },
+  "gasLimit": {
+    "type": "uint64",
+    "description": "The maximum amount of gas to use for processing the transaction, as specified by the sender.",
+    "required": false
+  },
+  "fee": {
+    "type": "string",
+    "description": "The transaction fee. Until Hyperblocks V2 API becomes available, this fee is computed on App's side (best effort).",
+    "required": false
+  },
+  "value": {
+    "type": "string",
+    "description": "The amount of eGLD to be transferred.",
+    "required": false
+  },
+  "data": {
+    "type": "string",
+    "description": "The base64-encoded payload of the transaction.",
+    "required": false
+  },
+  "signature": {
+    "type": "string",
+    "description": "The hex-encoded signature.",
+    "required": false
+  },
+  "status": {
+    "type": "string",
+    "description": "The status of the transaction (success, fail, invalid).",
+    "required": true
+  }
+}
