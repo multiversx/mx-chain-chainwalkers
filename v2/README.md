@@ -1,6 +1,6 @@
 # Chainwalkers Elrond Parser
 
-This tool communicates with the central Elrond Gateway (an Elrond Proxy instance) to fetch and parse blocks & transactions.
+This tool communicates with the central Elrond Gateway (an Elrond Proxy instance) in order to fetch and parse blocks & transactions.
 
 Chainwalkers Framework Docs: [docs.flipsidecrypto.com](https://docs.flipsidecrypto.com)
 
