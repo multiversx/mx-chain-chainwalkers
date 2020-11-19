@@ -65,6 +65,9 @@ def post_process_hyperblock(block: dict):
     round = int(block.get("round", 0))
     block["timestamp"] = constants.ERD_START_TIME + constants.ERD_ROUND_TIME * round
 
+    hyperblock_nonce = block.get("nonce")
+    hyperblock_hash = block.get("hash")
+
     # Hyperblocks V1 does not provide the transaction fees (nor "gasUsed"). Hyperblocks V2 will provide this information.
     # Until then, we can compute the fees deterministically (best-effort).
     # For Smart Contract transactions, the refunds will be incompletely provided by the API - until Hyperblocks V2 becomes available.
@@ -92,6 +95,11 @@ def post_process_hyperblock(block: dict):
 
         fee = tx_gas_used * tx_gas_price
         transaction["fee"] = str(fee)
+
+        # Also add the hyperblock coordinates, for convenience
+        # (a bit of content duplication, since they are also provided in the parent structure):
+        transaction["hyperblockNonce"] = hyperblock_nonce
+        transaction["hyperblockHash"] = hyperblock_hash
 
 
 if __name__ == "__main__":
