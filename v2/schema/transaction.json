@@ -83,5 +83,15 @@
     "type": "string",
     "description": "The status of the transaction (success, fail, invalid).",
     "required": true
+  },
+  "hyperblockNonce": {
+    "type": "uint64",
+    "description": "The nonce of the parent hyperblock (the metablock that notarized this transaction, at destination).",
+    "required": false
+  },
+  "hyperblockHash": {
+    "type": "string",
+    "description": "The hex-encoded hash of the parent hyperblock (the metablock that notarized this transaction, at destination).",
+    "required": true
   }
 }
