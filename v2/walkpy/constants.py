@@ -1,5 +1,4 @@
-API_URL = "https://staging-api.elrond.com"
-GATEWAY_URL = "https://staging-gateway.elrond.com"
+GATEWAY_URL = "https://gateway.elrond.com"
 
 ERD_MIN_GAS_LIMIT = 50000
 ERD_GAS_PER_DATA_BYTE = 1500
