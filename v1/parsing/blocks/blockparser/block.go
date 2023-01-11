@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ElrondNetwork/chainwalkers-elrond-go/parsing"
-	"github.com/ElrondNetwork/chainwalkers-elrond-go/parsing/config"
-	"github.com/ElrondNetwork/chainwalkers-elrond-go/parsing/server"
+	"github.com/multiversx/mx-chain-chainwalkers/parsing"
+	"github.com/multiversx/mx-chain-chainwalkers/parsing/config"
+	"github.com/multiversx/mx-chain-chainwalkers/parsing/server"
 )
 
 type ParserBlock struct {

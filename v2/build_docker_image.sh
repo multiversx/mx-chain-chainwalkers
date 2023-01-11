@@ -1,1 +1,1 @@
-docker build . -t chainwalkers_elrond:latest
+docker build . -t chainwalkers_multiversx:latest

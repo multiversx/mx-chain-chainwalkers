@@ -1,11 +1,13 @@
 package parsing
 
-import "github.com/ElrondNetwork/elrond-go/core/indexer"
+import (
+	"github.com/multiversx/mx-chain-es-indexer-go/data"
+)
 
 type DataGetter interface {
-	GetTransactionsByMbHash(hash string) ([]indexer.Transaction, error)
-	GetMetaBlock(nonce uint64) (indexer.Block, string, error)
-	GetShardBlockByHash(hash string) (indexer.Block, string, error)
+	GetTransactionsByMbHash(hash string) ([]data.Transaction, error)
+	GetMetaBlock(nonce uint64) (data.Block, string, error)
+	GetShardBlockByHash(hash string) (data.Block, string, error)
 }
 
 type ParserBlock interface {

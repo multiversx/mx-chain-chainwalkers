@@ -1,6 +1,6 @@
-# Chainwalkers Elrond Parser
+# Chainwalkers MultiversX Parser
 
-This tool communicates with the central Elrond Gateway (an Elrond Proxy instance) in order to fetch and parse blocks & transactions.
+This tool communicates with the central MultiversX Gateway (an MultiversX Proxy instance) in order to fetch and parse blocks & transactions.
 
 Chainwalkers Framework Docs: [docs.flipsidecrypto.com](https://docs.flipsidecrypto.com)
 

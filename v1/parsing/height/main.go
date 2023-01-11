@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ElrondNetwork/chainwalkers-elrond-go/parsing/config"
-	"github.com/ElrondNetwork/elrond-go/core"
+	"github.com/multiversx/mx-chain-chainwalkers/parsing/config"
+	"github.com/multiversx/mx-chain-core-go/core"
 )
 
 func main() {

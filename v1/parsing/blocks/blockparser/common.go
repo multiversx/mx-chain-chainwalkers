@@ -1,10 +1,10 @@
 package blockparser
 
 import (
-	"github.com/ElrondNetwork/elrond-go/core/indexer"
+	"github.com/multiversx/mx-chain-es-indexer-go/data"
 )
 
-func convertIndexerTxToParserTx(tx indexer.Transaction) Transaction {
+func convertIndexerTxToParserTx(tx data.Transaction) Transaction {
 	return Transaction{
 		Hash:          tx.Hash,
 		MBHash:        tx.MBHash,
@@ -25,7 +25,7 @@ func convertIndexerTxToParserTx(tx indexer.Transaction) Transaction {
 	}
 }
 
-func convertIndexerTxsToParserTxs(txs []indexer.Transaction) []Transaction {
+func convertIndexerTxsToParserTxs(txs []data.Transaction) []Transaction {
 	parserTxs := make([]Transaction, 0)
 	for _, tx := range txs {
 		parserTxs = append(parserTxs, convertIndexerTxToParserTx(tx))
@@ -34,7 +34,7 @@ func convertIndexerTxsToParserTxs(txs []indexer.Transaction) []Transaction {
 	return parserTxs
 }
 
-func convertIndexerBlockToParserBlock(block indexer.Block, hash string) Block {
+func convertIndexerBlockToParserBlock(block data.Block, hash string) Block {
 	// TODO: Check if we can drop "validators" field - is it required?
 	// TODO: Check if we should also add miniBlocksHashes field.
 	// TODO: Check why MiniBlocks field is nil.
