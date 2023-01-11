@@ -1,4 +1,4 @@
-GATEWAY_URL = "https://gateway.elrond.com"
+GATEWAY_URL = "https://gateway.multiversx.com"
 
 ERD_MIN_GAS_LIMIT = 50000
 ERD_GAS_PER_DATA_BYTE = 1500
